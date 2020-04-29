@@ -1,0 +1,7 @@
+assets
+build/
+node_modules/
+template/
+.deploy
+.DS_Store
+.gitattributes
