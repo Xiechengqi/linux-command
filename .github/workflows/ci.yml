@@ -44,7 +44,7 @@ jobs:
       run: |
         git clone git@${Gitee_Repo} .gitee_repo
         cd .gitee_repo
-        git checkout master
+        git checkout -b master
         cd ../
         \cp -rf ./.deploy/* ./.gitee_repo/
         cd .gitee_repo
