@@ -20,3 +20,12 @@ jobs:
         ACCESS_TOKEN: ${{ secrets.TOKEN }}
         BRANCH: gh-pages
         FOLDER: .deploy/
+
+    - name: Mirror the Github organization repos to Gitee.
+      uses: Yikun/hub-mirror-action@master
+      with:
+        src: github/Xiechengqi
+        dst: gitee/Xiechengqi
+        dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+        dst_token: ${{ secrets.GITEE_TOKEN }}
+        white_list: "linux-command"
