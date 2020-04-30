@@ -24,6 +24,7 @@ jobs:
         white_list: "linux-command"
         clone_style: "ssh"
 
+
     - name: Deploy to Github gh-pages branch
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
