@@ -7,23 +7,13 @@ jobs:
   build-deploy:
     runs-on: ubuntu-18.04
     steps:
-    - uses: actions/checkout@master
+    - name: CheckOut
+      uses: actions/checkout@master
 
     - name: Install and Build 
       run: |
         npm install
         npm run build
-
-    - name: Deploy to Gitee
-      uses: Yikun/hub-mirror-action@master
-      with:
-        src: github/Xiechengqi
-        dst: gitee/Xiechengqi
-        dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
-        dst_token: ${{ secrets.GITEE_TOKEN }}
-        white_list: "linux-command"
-        clone_style: "ssh"
-
 
     - name: Deploy to Github gh-pages branch
       uses: JamesIves/github-pages-deploy-action@releases/v3
@@ -31,3 +21,34 @@ jobs:
         ACCESS_TOKEN: ${{ secrets.TOKEN }}
         BRANCH: gh-pages
         FOLDER: .deploy/
+
+#    - name: Setup Git Configuration
+#      run: |
+#        git config --global user.name "Xiechengqi"
+#        git config --global user.email "Xiechengqi01@gmail.com"
+
+    - name: Add SSH Private Key
+      run: |
+         mkdir /home/runner/.ssh/
+         echo "${{ secrets.SSH_PRIVATE_KEY }}" > /home/runner/.ssh/id_rsa
+         chmod 600 /home/runner/.ssh/id_rsa
+         ssh-keyscan -t rsa gitee.com >> ~/.ssh/known_hosts
+
+    - name: Get Latest Commit Message
+      run: |
+        git log --pretty=format:"%s from Github Actions at `TZ=UTC-8 date +"%Y-%m-%d %H:%M:%S"`" --date=short -n 1  > commit-message.log
+
+    - name: Deploy To Gitee Repo
+      env:
+        Gitee_Repo: gitee.com:Xiechengqi/linux.git
+      run: |
+        git clone git@${Gitee_Repo} .gitee_repo
+        cd .gitee_repo
+        git checkout -b master
+        cd ../
+        \cp -rf ./.deploy/* ./.gitee_repo/
+        cd .gitee_repo
+        git add .
+        git commit -F ../commit-message.log
+        git push --force --quiet "git@${Gitee_Repo}" master:master 
+   
