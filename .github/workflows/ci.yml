@@ -14,14 +14,7 @@ jobs:
         npm install
         npm run build
 
-    - name: Deploy to Github gh-pages branch
-      uses: JamesIves/github-pages-deploy-action@releases/v3
-      with:
-        ACCESS_TOKEN: ${{ secrets.TOKEN }}
-        BRANCH: gh-pages
-        FOLDER: .deploy/
-
-    - name: Mirror the Github organization repos to Gitee.
+    - name: Deploy to Gitee
       uses: Yikun/hub-mirror-action@master
       with:
         src: github/Xiechengqi
@@ -30,3 +23,10 @@ jobs:
         dst_token: ${{ secrets.GITEE_TOKEN }}
         white_list: "linux-command"
         clone_style: "ssh"
+
+    - name: Deploy to Github gh-pages branch
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      with:
+        ACCESS_TOKEN: ${{ secrets.TOKEN }}
+        BRANCH: gh-pages
+        FOLDER: .deploy/
