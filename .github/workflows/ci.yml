@@ -14,14 +14,6 @@ jobs:
       with:
         node-version: '10.x'
 
-    # - name: Cache dependencies
-    #   uses: actions/cache@v1
-    #   with:
-    #     path: ~/.npm
-    #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-node-
-
     - run: npm install
     - run: npm run build
 
@@ -50,17 +42,16 @@ jobs:
       run: |
         git log --pretty=format:"%s from Github Actions at `date +"%Y-%m-%d %H:%M:%S`" --date=short -n 1 > commit-message.log
 
-
     - name: Deploy to Gitee
       env:
         Gitee_Repo: gitee.com:Xiechengqi/linux.git
       run: |
         git clone git@${Gitee_Repo} .gitee_repo
         cd .gitee_repo
-        git checkout -b  master
+        rm -rf ./*
         cd ../
-        \cp -rf ./.deploy/* ./.gitee_repo/
+        \cp -rf .deploy/* ./.gitee_repo/
         cd .gitee_repo
-        git add .
+        git add -A
         git commit -F ../commit-message.log
         git push --force --quiet "git@${Gitee_Repo}" master:master
