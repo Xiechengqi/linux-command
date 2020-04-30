@@ -1,0 +1,65 @@
+name: CI Backup First
+
+# master branch on push, auto run
+on: 
+  push:
+    branches:
+      - master
+      
+jobs:
+  Backup:
+    name: Backup To Private Project 
+    runs-on: ubuntu-latest 
+    
+    steps:
+    # check it to your workflow can access it
+    # from: https://github.com/actions/checkout
+    - name: Checkout Repository master branch
+      uses: actions/checkout@master 
+      
+    - name: Setup Git Infomation
+      run: | 
+        git config --global user.name 'Xiechengqi' 
+        git config --global user.email 'Xiechengqiemail@163.com'  
+        
+    - name: Setup SSH Private Key
+      env:
+        token_Private_Keys: ${{ secrets.ssh_Private_Key }}
+      run: |
+        mkdir -p ~/.ssh/
+        echo "$token_Private_Keys" > ~/.ssh/id_rsa 
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan gitee.com >> ~/.ssh/known_hosts
+        # ssh-keyscan e.coding.net >> ~/.ssh/known_hosts
+    
+    - name: Get Latest Commit Message 
+      run: |
+        git log --pretty=format:"%s from Github Actions at `date +"%Y-%m-%d %H:%M:%S"`" --date=short -n 1  > commit-message.log
+    
+    - name: Backup To Gitee Private Project
+      env:
+        Gitee_Blog: gitee.com:Xiechengqi/blo.git
+      run: |
+        git clone git@${Gitee_Blog} .gitee_blog
+        cd .gitee_blog
+        git checkout -b master
+        cd ../
+        \cp -rf ./* ./.gitee_blog/
+        cd .gitee_blog
+        git add .
+        git commit -F ../commit-message.log
+        git push --force --quiet "git@${Gitee_Blog}" master:master
+        
+#    - name: Backup To Coding Private Project
+#       env:
+#         Coding_Blog: e.coding.net:用户名/blog.git
+#       run: |
+#         git clone git@${Coding_Blog} .coding_blog
+#         cd .coding_blog
+#         git checkout -b master
+#         cd ../
+#         \cp -rf ./* ./.coding_blog/
+#         cd .coding_blog
+#         git add .
+#         git commit -F ../commit-message.log
+#         git push --force --quiet "git@${Coding_Blog}" master:master
