@@ -25,10 +25,42 @@ jobs:
     - run: npm install
     - run: npm run build
 
-    - name: Deploy to gh-pages branch
+    - name: Deploy to Github gh-pages branch
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
         ACCESS_TOKEN: ${{ secrets.TOKEN }}
         BRANCH: gh-pages
         FOLDER: .deploy/
 
+    - name: Setup Git Config
+      run: |
+        git config --global user.name 'Xiechengqi'
+        git config --global user.email 'Xiechengqiemail@163.com'
+
+    - name: Setup SSH Private Key
+      env:
+        ssh_Private_Key: ${{ secrets.ssh_Private_Key }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$ssh_Private_Key" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan gitee.com >> ~/.ssh/known_hosts
+
+    - name: Get Latest Commit Message
+      run: |
+        git log --pretty=format:"%s from Github Actions at `date +"%Y-%m-%d %H:%M:%S`" --date=short -n 1 > commit-message.log
+
+
+    - name: Deploy to Gitee
+      env:
+        Gitee_Repo: gitee.com:Xiechengqi/linux.git
+      run: |
+        git clone git@${Gitee_Repo} .gitee_repo
+        cd .gitee_repo
+        git checkout master
+        cd ../
+        \cp -rf ./.deploy/* ./.gitee_repo/
+        cd .gitee_repo
+        git add .
+        git commit -F ../commit-message.log
+        git push --force --quiet "git@${Gitee_Repo}" master:master
