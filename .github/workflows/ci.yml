@@ -40,7 +40,7 @@ jobs:
 
     - name: Deploy To Gitee Repo
       env:
-        Gitee_Repo: gitee.com:Xiechengqi/linux.git
+        Gitee_Repo: gitee.com:Xiechengqi/linux-command.git
       run: |
         git clone git@${Gitee_Repo} .gitee_repo
         cd .gitee_repo
@@ -60,4 +60,4 @@ jobs:
           # 注意在 Settings->Secrets 配置 GITEE_PASSWORD
           gitee-password: ${{ secrets.GITEE_PASSWORD }}
           # 注意替换为你的 Gitee 仓库
-          gitee-repo: Xiechengqi/linux   
+          gitee-repo: Xiechengqi/linux-command
