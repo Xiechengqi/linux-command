@@ -22,10 +22,10 @@ jobs:
         BRANCH: gh-pages
         FOLDER: .deploy/
 
-#    - name: Setup Git Configuration
-#      run: |
-#        git config --global user.name "Xiechengqi"
-#        git config --global user.email "Xiechengqi01@gmail.com"
+    - name: Setup Git Configuration
+      run: |
+        git config --global user.name "Xiechengqi"
+        git config --global user.email "Xiechengqi01@gmail.com"
 
     - name: Add SSH Private Key
       run: |
