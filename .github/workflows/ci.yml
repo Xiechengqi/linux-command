@@ -3,12 +3,24 @@ on:
   push:
     branches:
       - master
+  schedule:
+     - cron: '0 21 * * *'
 jobs:
   build-deploy:
     runs-on: ubuntu-18.04
     steps:
     - name: CheckOut
       uses: actions/checkout@master
+    
+    - name: Get new Rep
+      run: |
+        wget https://github.com/jaywcjlove/linux-command/archive/master.zip
+        unzip master.zip 
+        rm -rf master.zip
+        cd linux-command-master
+        cp -r `ls | grep -v README.md` ../
+        cd ../
+        rm -rf linux-command-master
 
     - name: Install and Build 
       run: |
